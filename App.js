@@ -9,6 +9,7 @@ import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import HomeScreen from './screens/HomeScreen';
 import { auth } from "./firebase";
+import ImageScreen from "./screens/ImageScreen";
 
 const Stack = createStackNavigator()
 
@@ -19,33 +20,15 @@ const globalScreenOptions = {
 }
 
 export default function App() {
-    const [isSignedIn, setIsSignedIn] = useState(false)
-
-    useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged((authUser) => {
-            if(authUser) {
-                setIsSignedIn(true)
-            }
-        })
-
-        return unsubscribe;
-    }, [])
 
     return (
         <NavigationContainer>
                 <Stack.Navigator screenOptions={globalScreenOptions}>
-                { !isSignedIn ? (
-                    <>
                         <Stack.Screen name="Loading" component={LoadingScreen} options={{headerShown: false}}/>
                         <Stack.Screen name="Login" component={LoginScreen} />
                         <Stack.Screen name="Register" component={RegisterScreen} />
-                        
-                    </>
-                ) : (
-                    <>
                         <Stack.Screen name="Home" component={HomeScreen} options={{gestureEnabled: false}}/>
-                    </>
-                )}
+                        <Stack.Screen name="Image" component={ImageScreen} />
                 </Stack.Navigator>
         </NavigationContainer>
     );

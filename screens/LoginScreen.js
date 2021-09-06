@@ -8,9 +8,21 @@ import { auth } from '../firebase'
 const LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((authUser) => {
+            if(authUser) {
+                navigation.replace("Home")
+            }
+        })
+
+        return unsubscribe;
+    }, [])
     
     const signIn = () => {
-
+        auth.signInWithEmailAndPassword(email, password).then((userCredential) => {
+            const user = userCredential.user
+        }).catch((error) => console.log(error.message))
     }
 
     return (
@@ -40,6 +52,7 @@ const LoginScreen = ({ navigation }) => {
             <Button 
                 buttonStyle={{ backgroundColor: "#403555" }} 
                 containerStyle={styles.button} 
+                onPress={() => signIn()} 
                 title="Login" 
             />
             <Button 
