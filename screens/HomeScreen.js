@@ -30,19 +30,19 @@ const HomeScreen = ({ navigation }) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            let data = {}
             const imageRef = db.collection('images')
             const snapshot = await imageRef.where('user', '==', username).get()
             if(snapshot.empty) {
                 return;
             }
-            snapshot.forEach(d => {
-                setDoc({id: d.id, image: d.data()})
-            })
+            setDoc(snapshot.docs.map(doc => ({
+                id: doc.id,
+                image: doc.data()
+            })))
         }
         fetchData()
         setLoading(false)
-    }, [username])
+    }, [doc])
 
     const addPhoto = async () => {
         
@@ -62,7 +62,7 @@ const HomeScreen = ({ navigation }) => {
         if (result) {
             setImgData(result);
         }
-
+        console.log(imgData.uri)
         const response = await fetch(imgData.uri)
 
         const blob = await response.blob()
@@ -96,13 +96,17 @@ const HomeScreen = ({ navigation }) => {
         <MainView>
             <MainTitle>Your Photos</MainTitle>
             <ScrollView>
-                <ImageContainer onPress={() => navigation.navigate('Image')}>
                 { !loading ? (
-                    <ImageListItem data={doc} />
+                    doc.map(data => (
+                        <ImageContainer onPress={() => navigation.navigate('Image', { 
+                            image: data
+                        })}>
+                                <ImageListItem key={data.id} data={data} />
+                        </ImageContainer>
+                    ))
                 ) : (
                     <Text>No Photos Yet...</Text>
                 )}
-                </ImageContainer>
             </ScrollView>
             <View>
                 <Button 
